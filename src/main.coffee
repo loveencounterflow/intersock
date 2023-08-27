@@ -4,29 +4,6 @@
 
 
 ############################################################################################################
-GUY                       = require 'guy'
-{ alert
-  debug
-  help
-  info
-  plain
-  praise
-  urge
-  warn
-  whisper }               = GUY.trm.get_loggers 'intersock'
-{ rpr
-  inspect
-  echo
-  log     }               = GUY.trm
-#...........................................................................................................
-# { isa
-#   declare
-#   type_of
-#   validate
-#   equals }                = types
-{ after
-  defer
-  sleep }                 = GUY.async
 WS                        = require 'ws'
 
 
