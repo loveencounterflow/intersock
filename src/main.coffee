@@ -5,14 +5,18 @@
 
 ############################################################################################################
 WS                        = require 'ws'
+WGUY                      = require 'webguy'
+{ debug }                 = console
 
 
 #===========================================================================================================
 @Intersock = class Intersock
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ( server, targets... ) ->
-    @_ws = new WS.WebSocketServer { server, }
+  constructor: ( server, providers... ) ->
+    @providers  = providers
+    debug '^24343^', ( WGUY.props.public_keys p ) for p in providers
+    @_ws        = new WS.WebSocketServer { server, }
     return undefined
 
 
