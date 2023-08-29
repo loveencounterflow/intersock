@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   webguy:
-    specifier: ^0.0.5
-    version: 0.0.5
+    specifier: ^1.0.0
+    version: 1.0.0
   ws:
     specifier: ^8.13.0
     version: 8.13.0(bufferutil@4.0.7)
@@ -30,10 +30,11 @@ packages:
   /node-gyp-build@4.6.1:
     resolution: {integrity: sha512-24vnklJmyRS8ViBNI8KbtK/r/DmXQMRiOMXTNz2nrTnAYUwjmEEbnnpB/+kt+yWRv73bPsSPRFddrcIbAxSiMQ==}
     hasBin: true
+    requiresBuild: true
     dev: false
 
-  /webguy@0.0.5:
-    resolution: {integrity: sha512-oSTW4Nchx7fz+9QJYhnaPD+Q0V513rgH2u6Wc+G1qRZojUkZcUHPZlMjgBnS8suRKwOY61tWAEt8vPm2OeyL9w==}
+  /webguy@1.0.0:
+    resolution: {integrity: sha512-AU7xeOS6Fm92dffZxQsRBnt0/4VvGQPFLrWdyH4magGPyrxZ4EIC6YiAfEnRDMZtcHrpiI3rmKMHXJ1KFzf/wA==}
     dev: false
 
   /ws@8.13.0(bufferutil@4.0.7):

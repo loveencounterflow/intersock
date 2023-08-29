@@ -13,7 +13,7 @@
     "bufferutil": "^4.0.7"
   },
   "dependencies": {
-    "webguy": "^0.0.5",
+    "webguy": "^1.0.0",
     "ws": "^8.13.0"
   }
 }
