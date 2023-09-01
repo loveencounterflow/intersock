@@ -57,7 +57,7 @@ WGUY                      = require 'webguy'
       ws.on 'message',  ( d ) =>
         d = JSON.parse d
         log 'received: %s', d
-        ws.send JSON.stringify { d, }
+        ws.send JSON.stringify { received: d, }
         return null
       #.....................................................................................................
       debug '^233453^', "Intersock WebSocketServer connected on #{url}"
