@@ -8,6 +8,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [InterSock](#intersock)
+  - [Elementary Conversations](#elementary-conversations)
   - [RPC Message Format](#rpc-message-format)
   - [RPC API](#rpc-api)
 
@@ -19,13 +20,52 @@
 
 facilitate communication and remote procedure calls (RPC) between browser and server
 
-## RPC Message Format
 
-* An elementary conversation always consists of 🠉request and 🠋response.
+## Elementary Conversations
+
+* In contrast to (classical) HTTP(S) (where each elementary conversation has to be initiated by the client),
+  WebSocket communication is normally bidirectional (both client and server can send messages) but not
+  conversational (there's no built-in mechanism to deal with request / response patterns). InterSock
+  implements this capability so remote procedure calls (RPC) with results becomes possible.
+
+* An elementary conversation always consists of one 🠉request together with its corresponding 🠋response.
+
+* WebSocket communication is asynchronous, so any message may be sent from either side at any time;
+  therefore, sending a request and then waiting for 'the' response is not possible as with HTTP(S) since the
+  next message arriving from the other side could be the response to some other request from the client, or
+  be an RP call, or a data transmission. To sort out the right piece of data from the stream of messages,
+  IDs are used.
 
 * Each 🠉request must have a Message ID (MID) which is controlled at the discretion of the sender; each
   🠋response by the receiving side must use the same property key as the 🠉request's MID with the same value
   in its payload so the request can be properly recognized by the 🠉request sender.
+
+* The ID schema allows for any number of 🠋responses for any 🠉request; this is useful e.g. for streaming an
+  indeterminate number of data items in response to a single request. At the time being, however, the writer
+  of this has no practical need for this, so implementation will be postponed. With streaming in mind,
+  however, we can already give following foundational principles:
+
+  * **An elementary conversation has always exactly one 🠉request and one 🠋response**. Even FYI and error
+    messages will be recepted with an ACK message.
+
+  * The 🠋response may indicate that it is the leader of a stream, i.e. an indeterminate number of follow-up
+    messages that may or may not arrive in the future.
+
+  * In case of streaming:
+
+    * Follow-up messages to a streaming 🠋response should get their own name and / or type.
+
+    * The sender of the original 🠉request may call streaming off by sending an appropriate message (format
+      TBD; might be standardized, must contain MID; might be specialized property value of the 🠋response).
+
+    * The sender of the streaming data may indicate end-of-stream (EOS) by sending an appropriate message
+      (as above, format TBD).
+
+  * Also possible to initiate 🠉request-streaming, that is, one side sends a message that tells the receiver
+    to prepare for an indeterminate number of follow-ups.
+
+
+## RPC Message Format
 
 * **`cmid`**, **`smid`** (`text`): *Client Message ID* (CMID) and *Server Message ID* (SMID); these are
   counters that start at an arbitrary integer and are incremented for each subsequent request. Both may or
