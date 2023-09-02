@@ -32,7 +32,7 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 * **`type`**
 
-  * informational
+  * **Informational**:
 
     * `'fyi'`: *For Your Information*; a package of expected or unsolicited data. No result is expected.
 
@@ -40,13 +40,13 @@ facilitate communication and remote procedure calls (RPC) between browser and se
       something to `await` for before proceding; `'ack'` tells the sender that the listener has seen and
       processed the data to the point where it is ready, e.g. to receive the next piece of data.
 
-  * RPC
+  * **Call Method**:
 
     * `'call'`: *Call a method*
 
     * `'result'`: *Result of a `call`*.
 
-  * Error
+  * **Error**:
 
     * `'error'`: *Error*. Ex.: `{ cmid: 234, type: 'error', key: 'division-by-zero', value: { lnr: 24, ...,
       }, }`
@@ -78,6 +78,6 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 ## RPC API
 
-* **`send: () ->`**: Sends a message of type `fyi`
-* **`err: () ->`**: Sends a message of type `error`
-* **`err: () ->`**: Sends a message of type `error`
+* **`send: () ->`**: Sends a message of type `fyi`, may `await` an `ack`.
+* **`call: () ->`**: Initiates a remote procedure call (RPC), may `await` the `result`.
+* **`err: () ->`**: Sends a message of type `error`, may `await` an `ack`.
