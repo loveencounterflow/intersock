@@ -42,16 +42,16 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
   * **Call Method**:
 
-    * 🠉 `'call'`: *Call a method*
+    🠉 `'call'`: *Call a method*
 
-    * 🠋 `'result'`: *Result of a `call`*.
+    🠋 `'result'`: *Result of a `call`*.
 
   * **Error**:
 
-    * 🠉 `'error'`: *Error*. Ex.: `{ cmid: 234, type: 'error', key: 'division-by-zero', value: { lnr: 24, ...,
+    🠉 `'error'`: *Error*. Ex.: `{ cmid: 234, type: 'error', key: 'division-by-zero', value: { lnr: 24, ...,
       }, }`
 
-    * An error message from either side should be acknowledged with an 🠋 `ack` message. This is mainly so that
+    🠋 An error message from either side should be acknowledged with an `ack` message. This is mainly so that
       behavior remains consistent with `fyi` (i.e. all messages will be acknowledged or replied to by either
       side).
 
