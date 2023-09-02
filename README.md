@@ -32,7 +32,7 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 * **`type`**
 
-  * **Informational**:
+  🠉🠋 **Informational**:
 
     🠉 `'fyi'`: *For Your Information*; a package of expected or unsolicited data. No result is expected.
 
