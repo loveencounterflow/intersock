@@ -32,7 +32,7 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 * **`type`**
 
-  🠉 🠋 **Informational**:
+  * **Informational**:
 
     🠉 `'fyi'`: *For Your Information*; a package of expected or unsolicited data. No result is expected.
 
@@ -40,7 +40,7 @@ facilitate communication and remote procedure calls (RPC) between browser and se
       something to `await` for before proceding; `'ack'` tells the sender that the listener has seen and
       processed the data to the point where it is ready, e.g. to receive the next piece of data.
 
-  🠉 🠋 **Call Method**:
+  * **Call Method**:
 
     🠉 `'call'`: *Call a method*
 
