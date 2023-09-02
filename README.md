@@ -34,9 +34,9 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
   * **Informational**:
 
-    * 🠉 `'fyi'`: *For Your Information*; a package of expected or unsolicited data. No result is expected.
+    🠉 `'fyi'`: *For Your Information*; a package of expected or unsolicited data. No result is expected.
 
-    * 🠋 `'ack'`: *Acknowledge*. Sent by the receiver of an `fyi` message. The message is there so senders have
+    🠋 `'ack'`: *Acknowledge*. Sent by the receiver of an `fyi` message. The message is there so senders have
       something to `await` for before proceding; `'ack'` tells the sender that the listener has seen and
       processed the data to the point where it is ready, e.g. to receive the next piece of data.
 
