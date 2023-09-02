@@ -21,6 +21,12 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 ## RPC Message Format
 
+* An elementary conversation always consists of 🠉request and 🠋response.
+
+* Each 🠉request must have a Message ID (MID) which is controlled at the discretion of the sender; each
+  🠋response by the receiving side must use the same property key as the 🠉request's MID with the same value
+  in its payload so the request can be properly recognized by the 🠉request sender.
+
 * **`cmid`**, **`smid`** (`text`): *Client Message ID* (CMID) and *Server Message ID* (SMID); these are
   counters that start at an arbitrary integer and are incremented for each subsequent request. Both may or
   may not restart when clients get disconnected or a server is restarted. Since CMIDs and SMIDs are used to
