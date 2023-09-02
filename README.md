@@ -24,8 +24,11 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 * **`cmid`**, **`smid`** (`text`): *Client Message ID* (CMID) and *Server Message ID* (SMID); these are
   counters that start at an arbitrary integer and are incremented for each subsequent request. Both may or
   may not restart when clients get disconnected or a server is restarted. Since CMIDs and SMIDs are used to
-  recognize the response to a `call()`, this entails that, under abnormal conditions, wrong pairings between
-  request and response may occur, however unlikely.
+  recognize the response to a `call`, this entails that, under abnormal conditions, wrong pairings between
+  request and response may occur, however unlikely. When the client initiates a conversation, the client
+  must set the CMID; when the server sends back a `result` or an `ack`, the server must use the same CMID
+  under the same key, `cmid`; an SMID is not to be set in either message. Vice versa when the server starts
+  a conversation: the server has to obtain a new SMID and set the `smid` property, and so forth.
 
 * **`type`**
 
