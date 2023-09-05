@@ -8,9 +8,11 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [InterSock](#intersock)
-  - [Elementary Conversations](#elementary-conversations)
+  - [Elementary Exchanges (EXes)](#elementary-exchanges-exes)
   - [RPC Message Format](#rpc-message-format)
+    - [UTC Timestamp](#utc-timestamp)
   - [RPC API](#rpc-api)
+- [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -21,12 +23,12 @@
 facilitate communication and remote procedure calls (RPC) between browser and server
 
 
-## Elementary Conversations
+## Elementary Exchanges (EXes)
 
 * In contrast to (classical) HTTP(S) (where each elementary conversation has to be initiated by the client),
   WebSocket communication is normally bidirectional (both client and server can send messages) but not
   conversational (there's no built-in mechanism to deal with request / response patterns). InterSock
-  implements this capability so remote procedure calls (RPC) with results becomes possible.
+  implements this capability to enable remote procedure calls (RPCs) with results.
 
 * An elementary conversation always consists of one 🠉request together with its corresponding 🠋response.
 
@@ -41,9 +43,7 @@ facilitate communication and remote procedure calls (RPC) between browser and se
   in its payload so the request can be properly recognized by the 🠉request sender.
 
 * The ID schema allows for any number of 🠋responses for any 🠉request; this is useful e.g. for streaming an
-  indeterminate number of data items in response to a single request. At the time being, however, the writer
-  of this has no practical need for this, so implementation will be postponed. With streaming in mind,
-  however, we can already give following foundational principles:
+  indeterminate number of data items in response to a single request. Foundational principles:
 
   * **An elementary conversation has always exactly one 🠉request and one 🠋response**. Even FYI and error
     messages will be recepted with an ACK message.
@@ -67,14 +67,24 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 
 ## RPC Message Format
 
-* **`cmid`**, **`smid`** (`text`): *Client Message ID* (CMID) and *Server Message ID* (SMID); these are
-  counters that start at an arbitrary integer and are incremented for each subsequent request. Both may or
-  may not restart when clients get disconnected or a server is restarted. Since CMIDs and SMIDs are used to
-  recognize the response to a `call`, this entails that, under abnormal conditions, wrong pairings between
-  request and response may occur, however unlikely. When the client initiates a conversation, the client
-  must set the CMID; when the server sends back a `result` or an `ack`, the server must use the same CMID
-  under the same key, `cmid`; an SMID is not to be set in either message. Vice versa when the server starts
-  a conversation: the server has to obtain a new SMID and set the `smid` property, and so forth.
+* **`exid`**: *Elementary eXchange ID* (`text`):
+  * Has three fields:
+    * a producer ID: `c` for the client (browser), `s` for the server,
+    * a UTC timestamp, and
+    * a three-digit, zero-left-padded, zero-based counter (which will be `000` or `001` in almost all
+      realistic cases).
+  * fields are separated by colons, ex. `c:1693924247557.709:001`
+  * Advantage of this format is that even after restarting, EXIDs will continue to be sortable by time and
+    will remain free of collisions. Since UTC is used rather than local time, EXIDs are not affected by time
+    zone changes (daylight saving time, travel). It will even be possible to sort events from both
+    participants (client and server) in a single table, either under the assumption that both had
+    sufficiently synchronized clocks, or based on a measured delta between the two.
+
+  <del>When the client initiates a conversation, the client must set the CMID; when the server sends back a
+  `result` or an `ack`, the server must use the same CMID under the same key, `cmid`; an SMID is not to be
+  set in either message. Vice versa when the server starts a conversation: the server has to obtain a new
+  SMID and set the `smid` property, and so forth.</del>
+
 
 * **`type`**
 
@@ -122,8 +132,21 @@ facilitate communication and remote procedure calls (RPC) between browser and se
   * **In case of `type: 'error'`**, the optional value may contain additional details such as filename,
     linenumber, offending value, &c.
 
+### UTC Timestamp
+
+```coffee
+utc_timestamp = ( performance.timeOrigin + performance.now() ).toFixed 3
+```
+
 ## RPC API
 
 * **`send: () ->`**: Sends a message of type `fyi`, may `await` an `ack`.
 * **`call: () ->`**: Initiates a remote procedure call (RPC), may `await` the `result`.
 * **`err: () ->`**: Sends a message of type `error`, may `await` an `ack`.
+
+
+# To Do
+
+* **[–]** define format and resolution for UTC timestamp
+
+
