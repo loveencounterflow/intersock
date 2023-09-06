@@ -10,7 +10,6 @@
 - [InterSock](#intersock)
   - [Elementary Exchanges (EXes)](#elementary-exchanges-exes)
   - [RPC Message Format](#rpc-message-format)
-    - [UTC Timestamp](#utc-timestamp)
   - [RPC API](#rpc-api)
 - [To Do](#to-do)
 
@@ -70,9 +69,12 @@ facilitate communication and remote procedure calls (RPC) between browser and se
 * **`exid`**: *Elementary eXchange ID* (`text`):
   * Has three fields:
     * a producer ID: `c` for the client (browser), `s` for the server,
-    * a UTC timestamp, and
+    * a float representing a UNIX epoch-based UTC timestamp in milliseconds with zero-padded microsecond
+      resolution (ex. `1693992062544.400`), and
     * a three-digit, zero-left-padded, zero-based counter (which will be `000` or `001` in almost all
       realistic cases).
+    * The two last fields are produced by
+      [`webguy.time.stamp_and_count()`](https://github.com/loveencounterflow/webguy#time)
   * fields are separated by colons, ex. `c:1693924247557.709:001`
   * Advantage of this format is that even after restarting, EXIDs will continue to be sortable by time and
     will remain free of collisions. Since UTC is used rather than local time, EXIDs are not affected by time
@@ -132,11 +134,6 @@ facilitate communication and remote procedure calls (RPC) between browser and se
   * **In case of `type: 'error'`**, the optional value may contain additional details such as filename,
     linenumber, offending value, &c.
 
-### UTC Timestamp
-
-```coffee
-utc_timestamp = ( performance.timeOrigin + performance.now() ).toFixed 3
-```
 
 ## RPC API
 
