@@ -8,29 +8,32 @@ WGUY                      = require 'webguy'
 { log
   debug }                 = console
 
+#===========================================================================================================
+defaults =
+  host:   'localhost'
+  port:   5500 + 1
 
 #===========================================================================================================
 @Intersock = class Intersock
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ( providers... ) ->
+  constructor: ( cfg ) ->
     ### TAINT hardcoding address for the time being ###
-    @providers  = providers
-    @state      =
-      last_id:      0
-    debug '^24343^', providers
-    debug '^24343^', ( WGUY.props.public_keys p ) for p in providers
-    host        = 'localhost'
-    port        = 5500 + 1
-    url         = "ws://#{host}:#{port}/ws"
-    ### TAINT use @cfg ###
-    if globalThis.WebSocket?  then  @_create_client { host, port, url, }
-    else                            @_create_server { host, port, url, }
+    # @providers  = providers
+    # @state      =
+    #   last_id:      0
+    # debug '^24343^', providers
+    # debug '^24343^', ( WGUY.props.public_keys p ) for p in providers
+    cfg     = { defaults..., cfg..., }
+    cfg.url = "ws://#{cfg.host}:#{cfg.port}/ws"
+    @cfg    = Object.freeze cfg
+    if globalThis.WebSocket?  then  @_create_client()
+    else                            @_create_server()
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _create_client: ({ host, port, url, }) ->
-    @_ws_client = @_ws = new WebSocket url
+  _create_client: ->
+    @_ws_client = @_ws = new WebSocket @cfg.url
     #.......................................................................................................
     @_ws_client.addEventListener 'open', ( event ) =>
       log "Opened WebSocket connection:", event.data
@@ -44,10 +47,10 @@ WGUY                      = require 'webguy'
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _create_server: ({ host, port, url, }) ->
+  _create_server: ->
     ### TAINT here we can use guy ###
     WS          = require 'ws'
-    @_ws_server = @_ws = new WS.WebSocketServer { port, }
+    @_ws_server = @_ws = new WS.WebSocketServer { port: @cfg.port, }
     @_ws_server.on 'connection', connection = ( ws ) =>
       #.....................................................................................................
       ws.on 'error',    ( P... ) =>
@@ -60,11 +63,11 @@ WGUY                      = require 'webguy'
         ws.send JSON.stringify { received: d, }
         return null
       #.....................................................................................................
-      debug '^233453^', "Intersock WebSocketServer connected on #{url}"
-      ws.send "helo from #{url}"
+      debug '^233453^', "Intersock WebSocketServer connected on #{@cfg.url}"
+      ws.send "helo from #{@cfg.url}"
       return null
     #.......................................................................................................
-    debug '^233453^', "Intersock WebSocketServer listening on #{url}"
+    debug '^233453^', "Intersock WebSocketServer listening on #{@cfg.url}"
     return null
 
   #---------------------------------------------------------------------------------------------------------
