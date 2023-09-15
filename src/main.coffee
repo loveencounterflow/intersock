@@ -10,8 +10,9 @@ WGUY                      = require 'webguy'
 
 #===========================================================================================================
 defaults =
-  host:   'localhost'
-  port:   5500 + 1
+  host:         'localhost'
+  port:         5500 + 1
+  _in_browser:  WGUY.environment.browser
 
 #===========================================================================================================
 @Intersock = class Intersock
@@ -24,7 +25,7 @@ defaults =
     @state          = { last_id: 0, }
     cfg             = { defaults..., cfg..., }
     cfg.url         = "ws://#{cfg.host}:#{cfg.port}/ws"
-    cfg.in_browser  = globalThis.WebSocket?
+    cfg._in_browser = globalThis.WebSocket?
     @cfg            = Object.freeze cfg
     return undefined
 
@@ -45,13 +46,13 @@ defaults =
     @_ws.send JSON.stringify d
 
   #---------------------------------------------------------------------------------------------------------
-  on: ( P... ) -> ( if @cfg.in_browser then @_ws.addEventListener else @_ws.on ).apply @_ws, P
+  on: ( P... ) -> ( if @cfg._in_browser then @_ws.addEventListener else @_ws.on ).apply @_ws, P
 
   #---------------------------------------------------------------------------------------------------------
   _parse_message: ( data ) ->
     try
-      data  = data.data if ( ( typeof data ) is 'object' ) and data.data?
-      data  = data.toString() unless ( typeof data ) is 'string'
+      data  = data.data       if @cfg._in_browser
+      data  = data.toString() if ( typeof data ) isnt 'string'
       R     = JSON.parse data
     catch error
       debug '^intersock@1^', "ERROR", error.message
@@ -70,7 +71,7 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   start: ->
-    { WebSocket } = require 'ws' unless @cfg.in_browser
+    { WebSocket } = require 'ws' unless @cfg._in_browser
     @_ws_client = @_ws = new WebSocket @cfg.url
     #.......................................................................................................
     @on 'open', =>
