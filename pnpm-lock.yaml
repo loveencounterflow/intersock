@@ -6,11 +6,11 @@ settings:
 
 dependencies:
   webguy:
-    specifier: ^1.1.0
-    version: 1.1.0
+    specifier: ^2.1.0
+    version: 2.1.0
   ws:
-    specifier: ^8.13.0
-    version: 8.13.0(bufferutil@4.0.7)
+    specifier: ^8.14.1
+    version: 8.14.1(bufferutil@4.0.7)
 
 optionalDependencies:
   bufferutil:
@@ -27,18 +27,35 @@ packages:
       node-gyp-build: 4.6.1
     dev: false
 
+  /dayjs@1.11.9:
+    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
+    dev: false
+
+  /intertype@7.6.3:
+    resolution: {integrity: sha512-77FmgaqGydWBc5OIde+geMj4+dGZ1i5UIFXM4C9QHiEIBjh+Gojycsb7XtRYYLNhNJepa+jotHXfAGPngHatzw==}
+    dependencies:
+      multimix: 5.0.0
+    dev: false
+
+  /multimix@5.0.0:
+    resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
+    dev: false
+
   /node-gyp-build@4.6.1:
     resolution: {integrity: sha512-24vnklJmyRS8ViBNI8KbtK/r/DmXQMRiOMXTNz2nrTnAYUwjmEEbnnpB/+kt+yWRv73bPsSPRFddrcIbAxSiMQ==}
     hasBin: true
     requiresBuild: true
     dev: false
 
-  /webguy@1.1.0:
-    resolution: {integrity: sha512-gLfteSWS+4EvF/v/u22DbgO0gcfB3/0z523WqgF7teTAAPLGA49c2Prl0oFkxclc9Uk9Om0TbctSaBgkMaa2aA==}
+  /webguy@2.1.0:
+    resolution: {integrity: sha512-yDdcrKEtGrHAKG+xoeZ0d0Dq8Tze/l1sBdxr40CKOj7QEY+nZBfCN6uBoh5KY/nICtw1bIXXyfbtWUe5LPSJVg==}
+    dependencies:
+      dayjs: 1.11.9
+      intertype: 7.6.3
     dev: false
 
-  /ws@8.13.0(bufferutil@4.0.7):
-    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
+  /ws@8.14.1(bufferutil@4.0.7):
+    resolution: {integrity: sha512-4OOseMUq8AzRBI/7SLMUwO+FEDnguetSk7KMb1sHwvF2w2Wv5Hoj0nlifx8vtGsftE/jWHojPy8sMMzYLJ2G/A==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
