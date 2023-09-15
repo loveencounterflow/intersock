@@ -27,6 +27,8 @@ defaults =
     cfg.url         = "ws://#{cfg.host}:#{cfg.port}/ws"
     cfg._in_browser = globalThis.WebSocket?
     @cfg            = Object.freeze cfg
+    debug '^Intersock.constructor@1^', @cfg
+    @_ws            = null
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -34,6 +36,7 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   send: ( $value ) -> new Promise ( resolve, reject ) =>
+    @start() unless @_ws
     id  = @_next_id()
     d   = { id, $key: 'send', $value, }
     handler = ( data_ui8a ) =>
@@ -44,6 +47,7 @@ defaults =
     ### TAINT only valid for client-side code ###
     @on 'message', handler
     @_ws.send JSON.stringify d
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   on: ( P... ) -> ( if @cfg._in_browser then @_ws.addEventListener else @_ws.on ).apply @_ws, P
@@ -71,8 +75,9 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   start: ->
-    { WebSocket } = require 'ws' unless @cfg._in_browser
-    @_ws_client = @_ws = new WebSocket @cfg.url
+    if @cfg._in_browser then  @_ws_client = @_ws = new globalThis.WebSocket @cfg.url
+    else                      @_ws_client = @_ws = new ( require 'ws' ).WebSocket @cfg.url
+    debug '^start@3^', @constructor.name, typeof @_ws
     #.......................................................................................................
     @on 'open', =>
       log "Connected to server", @cfg.url
