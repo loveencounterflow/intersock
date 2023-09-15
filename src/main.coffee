@@ -35,11 +35,9 @@ defaults =
   send: ( $value ) -> new Promise ( resolve, reject ) =>
     id  = @_next_id()
     d   = { id, $key: 'send', $value, }
-    handler = ( event ) =>
-      debug '^32439423874^', event.data
-      debug '^32439423874^', @constructor.name, @_ws.removeEventListener
-      try d = JSON.parse event.data catch error
-        debug '^intersock@2^', "ERROR", error.message
+    handler = ( data_ui8a ) =>
+      debug '^intersock.send/handler@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+      d = @_parse_message data_ui8a
       @_ws.removeEventListener 'message', handler
       resolve d
     ### TAINT only valid for client-side code ###
@@ -48,6 +46,17 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   on: ( P... ) -> ( if @cfg.in_browser then @_ws.addEventListener else @_ws.on ).apply @_ws, P
+
+  #---------------------------------------------------------------------------------------------------------
+  _parse_message: ( data ) ->
+    try
+      data  = data.data if ( ( typeof data ) is 'object' ) and data.data?
+      data  = data.toString() unless ( typeof data ) is 'string'
+      R     = JSON.parse data
+    catch error
+      debug '^intersock@1^', "ERROR", error.message
+      R = { $value: data, error: error.message, }
+    return R
 
 
 #===========================================================================================================
@@ -69,16 +78,13 @@ defaults =
       @_ws_client.send JSON.stringify { $key: 'info', $value: "helo from client", }
       return null
     #.......................................................................................................
-    @on 'message', ( data ) =>
-      data = data.toString()
-      try message = JSON.parse data catch error
-        debug '^intersock@1^', "ERROR", error.message
-        message = { $value: data, error: error.message, }
+    @on 'message', ( data_ui8a ) =>
+      debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+      message = @_parse_message data_ui8a
       log "Received message from server", message
       return null
     #.......................................................................................................
     return null
-
 
 #===========================================================================================================
 @Intersock_server = class Intersock_server extends Intersock
