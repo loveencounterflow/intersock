@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   webguy:
-    specifier: ^2.1.0
-    version: 2.1.0
+    specifier: ^2.2.0
+    version: 2.2.0
   ws:
     specifier: ^8.14.1
     version: 8.14.1(bufferutil@4.0.7)
@@ -47,8 +47,8 @@ packages:
     requiresBuild: true
     dev: false
 
-  /webguy@2.1.0:
-    resolution: {integrity: sha512-yDdcrKEtGrHAKG+xoeZ0d0Dq8Tze/l1sBdxr40CKOj7QEY+nZBfCN6uBoh5KY/nICtw1bIXXyfbtWUe5LPSJVg==}
+  /webguy@2.2.0:
+    resolution: {integrity: sha512-2d0at+MC/RyvwgBlNxImOd4aOpW10/vcXL2Ly07pK/HFWewX7F4HP5V3V4zSHMFhSSBc5ZIhxNM5nuSWWXhvHg==}
     dependencies:
       dayjs: 1.11.9
       intertype: 7.6.3
