@@ -17,12 +17,13 @@ defaults =
   port:         5500 + 1
   _in_browser:  WGUY.environment.browser
 
+
 #===========================================================================================================
 get_message_class = ( hub ) ->
 
   #---------------------------------------------------------------------------------------------------------
   $idx  = -1
-  $from = if ( hub instanceof Intersock_server ) then 's' else 'c'
+  $from = hub.cfg._$from
 
   #---------------------------------------------------------------------------------------------------------
   return class Message
@@ -53,6 +54,7 @@ get_message_class = ( hub ) ->
     cfg             = { defaults..., cfg..., }
     cfg.url         = "ws://#{cfg.host}:#{cfg.port}/ws"
     cfg._in_browser = globalThis.WebSocket?
+    cfg._$from      = if ( @ instanceof Intersock_server ) then 's' else 'c'
     @cfg            = Object.freeze cfg
     @Message        = get_message_class @
     debug '^Intersock.constructor@1^', @cfg
@@ -63,10 +65,11 @@ get_message_class = ( hub ) ->
   _next_id: -> @state.last_id++
 
   #---------------------------------------------------------------------------------------------------------
-  send: ( $value ) -> new Promise ( resolve, reject ) =>
-    d       = new @Message 'send', $value
+  send: ( $key, $value, extra ) -> new Promise ( resolve, reject ) =>
+    d       = new @Message $key, $value, extra
+    log "^#{@cfg._$from}.send@1^ sending: #{rpr d}"
     handler = ( data_ui8a ) =>
-      debug '^intersock.send/handler@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+      # debug '^intersock.send/handler@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
       d = @_parse_message data_ui8a
       @_ws.removeEventListener 'message', handler
       resolve d
@@ -112,15 +115,16 @@ get_message_class = ( hub ) ->
         console.error P
         return null
       #.....................................................................................................
-      @_ws.on 'message',  ( d ) =>
-        d = JSON.parse d
-        log "^Intersock_server/on_message@1^ server received: #{rpr d}"
+      @_ws.on 'message',  ( data_ui8a ) =>
+        # debug '^#{@cfg._$from}/on_message@1^', ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+        d = @_parse_message data_ui8a
+        log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
         unless d.$key is 'received'
-          ws.send JSON.stringify new @Message 'received', d
+          ws.send 'ack', d # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
       debug '^233453^', "Intersock WebSocketServer connected on #{@cfg.url}"
-      @send "helo from #{@cfg.url}"
+      @send 'info', "helo from #{@cfg.url}"
       return null
     #.......................................................................................................
     debug '^233453^', "Intersock WebSocketServer listening on #{@cfg.url}"
@@ -136,9 +140,9 @@ get_message_class = ( hub ) ->
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  send: ( $value ) ->
+  send: ( $key, $value, extra ) ->
     await @connect() if @connect? and not @_ws?
-    await super $value
+    await super $key, $value, extra
 
   #---------------------------------------------------------------------------------------------------------
   connect: -> new Promise ( resolve, reject ) =>
@@ -148,14 +152,13 @@ get_message_class = ( hub ) ->
     #.......................................................................................................
     @on 'open', =>
       log "Connected to server", @cfg.url
-      @_ws_client.send JSON.stringify { $key: 'info', $value: "helo from client", }
-      @_ws_client.send JSON.stringify new @Message 'info', "helo from client"
+      @_ws_client.send 'info', "helo from client"
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
       # debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
       d = @_parse_message data_ui8a
-      log "^Intersock_client/on_message@1^ client received: #{rpr d}"
+      log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
       return null
     #.......................................................................................................
     return null
