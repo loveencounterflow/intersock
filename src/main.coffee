@@ -5,8 +5,10 @@
 
 ############################################################################################################
 WGUY                      = require 'webguy'
+{ rpr }                   = WGUY.trm
 { log
   debug }                 = console
+
 
 #===========================================================================================================
 defaults =
@@ -87,7 +89,7 @@ defaults =
       #.....................................................................................................
       @_ws.on 'message',  ( d ) =>
         d = JSON.parse d
-        log 'received: %s', d
+        log "^Intersock_server/on_message@1^ server received: #{rpr d}"
         ws.send JSON.stringify { received: d, }
         return null
       #.....................................................................................................
@@ -124,9 +126,9 @@ defaults =
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
-      debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
-      message = @_parse_message data_ui8a
-      log "Received message from server", message
+      # debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+      d = @_parse_message data_ui8a
+      log "^Intersock_client/on_message@1^ client received: #{rpr d}"
       return null
     #.......................................................................................................
     return null
