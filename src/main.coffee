@@ -8,6 +8,7 @@ WGUY                      = require 'webguy'
 { rpr }                   = WGUY.trm
 { log
   debug }                 = console
+primitive_types           = [ 'number', 'boolean', 'string', ]
 
 
 #===========================================================================================================
@@ -17,6 +18,31 @@ defaults =
   _in_browser:  WGUY.environment.browser
 
 #===========================================================================================================
+get_message_class = ( hub ) ->
+
+  #---------------------------------------------------------------------------------------------------------
+  $idx  = -1
+  $from = if ( hub instanceof Intersock_server ) then 's' else 'c'
+
+  #---------------------------------------------------------------------------------------------------------
+  return class Message
+
+    #-------------------------------------------------------------------------------------------------------
+    constructor: ( $key, $value, extra ) ->
+      $id = WGUY.time.stamp()
+      $idx++
+      return if @_is_primitive $value then  { $id, $idx, $from, $value,     extra..., }
+      else                                  { $id, $idx, $from, $value...,  extra..., }
+
+    #-------------------------------------------------------------------------------------------------------
+    _is_primitive: ( x ) ->
+      return true if not x?
+      return true if ( typeof x ) in primitive_types
+      return true if Array.isArray x
+      return false
+
+
+#===========================================================================================================
 @Intersock = class Intersock
 
   #---------------------------------------------------------------------------------------------------------
@@ -24,11 +50,11 @@ defaults =
     # @providers  = providers
     # debug '^24343^', providers
     # debug '^24343^', ( WGUY.props.public_keys p ) for p in providers
-    @state          = { last_id: 0, }
     cfg             = { defaults..., cfg..., }
     cfg.url         = "ws://#{cfg.host}:#{cfg.port}/ws"
     cfg._in_browser = globalThis.WebSocket?
     @cfg            = Object.freeze cfg
+    @Message        = get_message_class @
     debug '^Intersock.constructor@1^', @cfg
     @_ws            = null
     return undefined
@@ -38,8 +64,7 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   send: ( $value ) -> new Promise ( resolve, reject ) =>
-    id  = @_next_id()
-    d   = { id, $key: 'send', $value, }
+    d       = new @Message 'send', $value
     handler = ( data_ui8a ) =>
       debug '^intersock.send/handler@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
       d = @_parse_message data_ui8a
@@ -61,7 +86,7 @@ defaults =
       R     = JSON.parse data
     catch error
       debug '^intersock@1^', "ERROR", error.message
-      R = { $value: data, error: error.message, }
+      R   = new @Message 'error', data, { $error: error.message, }
     return R
 
 
@@ -90,7 +115,8 @@ defaults =
       @_ws.on 'message',  ( d ) =>
         d = JSON.parse d
         log "^Intersock_server/on_message@1^ server received: #{rpr d}"
-        ws.send JSON.stringify { received: d, }
+        unless d.$key is 'received'
+          ws.send JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
       debug '^233453^', "Intersock WebSocketServer connected on #{@cfg.url}"
@@ -123,6 +149,7 @@ defaults =
     @on 'open', =>
       log "Connected to server", @cfg.url
       @_ws_client.send JSON.stringify { $key: 'info', $value: "helo from client", }
+      @_ws_client.send JSON.stringify new @Message 'info', "helo from client"
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
