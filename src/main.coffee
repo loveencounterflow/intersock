@@ -36,7 +36,6 @@ defaults =
 
   #---------------------------------------------------------------------------------------------------------
   send: ( $value ) -> new Promise ( resolve, reject ) =>
-    @start() unless @_ws
     id  = @_next_id()
     d   = { id, $key: 'send', $value, }
     handler = ( data_ui8a ) =>
@@ -65,44 +64,16 @@ defaults =
 
 
 #===========================================================================================================
-@Intersock_client = class Intersock_client extends Intersock
-
-  #---------------------------------------------------------------------------------------------------------
-  constructor: ( cfg ) ->
-    super cfg
-    # @start()
-    return undefined
-
-  #---------------------------------------------------------------------------------------------------------
-  start: ->
-    if @cfg._in_browser then  @_ws_client = @_ws = new globalThis.WebSocket @cfg.url
-    else                      @_ws_client = @_ws = new ( require 'ws' ).WebSocket @cfg.url
-    debug '^start@3^', @constructor.name, typeof @_ws
-    #.......................................................................................................
-    @on 'open', =>
-      log "Connected to server", @cfg.url
-      @_ws_client.send JSON.stringify { $key: 'info', $value: "helo from client", }
-      return null
-    #.......................................................................................................
-    @on 'message', ( data_ui8a ) =>
-      debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
-      message = @_parse_message data_ui8a
-      log "Received message from server", message
-      return null
-    #.......................................................................................................
-    return null
-
-#===========================================================================================================
 @Intersock_server = class Intersock_server extends Intersock
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super cfg
-    # @start()
+    @serve()
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  start: ->
+  serve: ->
     ### TAINT here we can use guy ###
     resolved    = false
     WS          = require 'ws'
@@ -127,4 +98,36 @@ defaults =
     debug '^233453^', "Intersock WebSocketServer listening on #{@cfg.url}"
     return null
 
+
+#===========================================================================================================
+@Intersock_client = class Intersock_client extends Intersock
+
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ( cfg ) ->
+    super cfg
+    return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  send: ( $value ) ->
+    await @connect() if @connect? and not @_ws?
+    await super $value
+
+  #---------------------------------------------------------------------------------------------------------
+  connect: -> new Promise ( resolve, reject ) =>
+    if @cfg._in_browser then  @_ws_client = @_ws = new globalThis.WebSocket @cfg.url
+    else                      @_ws_client = @_ws = new ( require 'ws' ).WebSocket @cfg.url
+    debug '^start@3^', @constructor.name, typeof @_ws
+    #.......................................................................................................
+    @on 'open', =>
+      log "Connected to server", @cfg.url
+      @_ws_client.send JSON.stringify { $key: 'info', $value: "helo from client", }
+      resolve null
+    #.......................................................................................................
+    @on 'message', ( data_ui8a ) =>
+      debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
+      message = @_parse_message data_ui8a
+      log "Received message from server", message
+      return null
+    #.......................................................................................................
+    return null
 
