@@ -16,8 +16,8 @@ primitive_types           = [ 'number', 'boolean', 'string', ]
 tabulate = ( ref, action, message ) ->
   ref     = to_width ref,     20
   action  = to_width action,  10
-  message = '' if message is undefined
-  log "#{ref}| #{action}| #{rpr message}"
+  message = if message is undefined then './.' else rpr message
+  log "#{ref}| #{action}| #{message}"
   return null
 
 
