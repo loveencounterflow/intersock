@@ -58,7 +58,6 @@ get_message_class = ( hub ) ->
     cfg._$from      = if ( @ instanceof Intersock_server ) then 's' else 'c'
     @cfg            = Object.freeze cfg
     @Message        = get_message_class @
-    debug '^Intersock.constructor@1^', @cfg
     @_ws            = null
     return undefined
 
@@ -125,11 +124,11 @@ get_message_class = ( hub ) ->
           @send 'ack', d # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
-      debug '^233453^', "Intersock WebSocketServer connected on #{@cfg.url}"
+      debug "^#{@cfg._$from}/on_connection@1^ Intersock WebSocketServer connected on #{@cfg.url}"
       @send 'info', "helo from #{@cfg.url}"
       return null
     #.......................................................................................................
-    debug '^233453^', "Intersock WebSocketServer listening on #{@cfg.url}"
+    debug "^#{@cfg._$from}/serve@1^ Intersock WebSocketServer listening on #{@cfg.url}"
     return null
 
 
@@ -150,7 +149,6 @@ get_message_class = ( hub ) ->
   connect: -> new Promise ( resolve, reject ) =>
     if @cfg._in_browser then  @_ws_client = @_ws = new globalThis.WebSocket @cfg.url
     else                      @_ws_client = @_ws = new ( require 'ws' ).WebSocket @cfg.url
-    debug '^start@3^', @constructor.name, typeof @_ws
     #.......................................................................................................
     @on 'open', =>
       log "^#{@cfg._$from}/on_open@1^ connected to server", @cfg.url
