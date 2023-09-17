@@ -9,6 +9,16 @@ WGUY                      = require 'webguy'
 { log
   debug }                 = console
 primitive_types           = [ 'number', 'boolean', 'string', ]
+{ to_width }              = require 'to-width'
+
+
+#===========================================================================================================
+tabulate = ( ref, action, message ) ->
+  ref     = to_width ref,     20
+  action  = to_width action,  20
+  message = '' if message is undefined
+  log "#{ref} | #{action} | #{rpr message}"
+  return null
 
 
 #===========================================================================================================
@@ -33,8 +43,8 @@ get_message_class = ( hub ) ->
     constructor: ( $key, $value, extra ) ->
       $id = WGUY.time.stamp()
       $idx++
-      return if @_is_primitive $value then  { $id, $idx, $from, $value,     extra..., }
-      else                                  { $id, $idx, $from, $value...,  extra..., }
+      return if @_is_primitive $value then  { $id, $idx, $from, $key, $value,     extra..., }
+      else                                  { $id, $idx, $from, $key, $value...,  extra..., }
 
     #-------------------------------------------------------------------------------------------------------
     _is_primitive: ( x ) ->
@@ -64,10 +74,11 @@ get_message_class = ( hub ) ->
   #---------------------------------------------------------------------------------------------------------
   send: ( $key, $value, extra ) -> new Promise ( resolve, reject ) =>
     d       = new @Message $key, $value, extra
-    log "^#{@cfg._$from}.send@1^ sending: #{rpr d}"
+    tabulate "^#{@cfg._$from}.send@1^", 'send', d
     handler = ( data_ui8a ) =>
       d = @_parse_message data_ui8a
       @_ws.removeEventListener 'message', handler
+      tabulate "^#{@cfg._$from}.send/handler@^", 'reply to send', d
       resolve d
     ### TAINT only valid for client-side code ###
     @on 'message', handler
@@ -114,16 +125,16 @@ get_message_class = ( hub ) ->
       #.....................................................................................................
       @_ws.on 'message',  ( data_ui8a ) =>
         d = @_parse_message data_ui8a
-        log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
+        tabulate "^#{@cfg._$from}/on_message@1^", 'received', d
         unless d.$key is 'received'
           @send 'ack', d # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
-      log "^#{@cfg._$from}/on_connection@1^ Intersock WebSocketServer connected on #{@cfg.url}"
-      @send 'info', "helo from #{@cfg.url}"
+      tabulate "^#{@cfg._$from}/on_connection@1^", 'connect', @cfg.url
+      # @send 'info', "helo from #{@cfg.url}"
       return null
     #.......................................................................................................
-    log "^#{@cfg._$from}/serve@1^ Intersock WebSocketServer listening on #{@cfg.url}"
+    tabulate "^#{@cfg._$from}/serve@1^", 'listen', @cfg.url
     return null
 
 
@@ -146,13 +157,13 @@ get_message_class = ( hub ) ->
     else                      @_ws_client = @_ws = new ( require 'ws' ).WebSocket @cfg.url
     #.......................................................................................................
     @on 'open', =>
-      log "^#{@cfg._$from}/on_open@1^ connected to server", @cfg.url
-      @send 'info', "helo from client"
+      tabulate "^#{@cfg._$from}/on_open@1^", 'connect', @cfg.url
+      # @send 'info', "helo from client"
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
       d = @_parse_message data_ui8a
-      log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
+      tabulate "^#{@cfg._$from}/on_message@1^", 'receive', d
       return null
     #.......................................................................................................
     return null
