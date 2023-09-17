@@ -15,6 +15,7 @@ primitive_types           = [ 'number', 'boolean', 'string', ]
 defaults =
   host:         'localhost'
   port:         5500 + 1
+  throw_errors: false
   _in_browser:  WGUY.environment.browser
 
 
@@ -88,7 +89,8 @@ get_message_class = ( hub ) ->
       data  = data.toString() if ( typeof data ) isnt 'string'
       R     = JSON.parse data
     catch error
-      debug '^intersock@1^', "ERROR", error.message
+      throw error if @cfg.throw_errors
+      debug '^#{@cfg._$from}._parse_message@1^', "ERROR", error.message
       R   = new @Message 'error', data, { $error: error.message, }
     return R
 
