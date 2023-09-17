@@ -49,9 +49,6 @@ get_message_class = ( hub ) ->
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
-    # @providers  = providers
-    # debug '^24343^', providers
-    # debug '^24343^', ( WGUY.props.public_keys p ) for p in providers
     cfg             = { defaults..., cfg..., }
     cfg.url         = "ws://#{cfg.host}:#{cfg.port}/ws"
     cfg._in_browser = globalThis.WebSocket?
@@ -69,7 +66,6 @@ get_message_class = ( hub ) ->
     d       = new @Message $key, $value, extra
     log "^#{@cfg._$from}.send@1^ sending: #{rpr d}"
     handler = ( data_ui8a ) =>
-      # debug '^intersock.send/handler@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
       d = @_parse_message data_ui8a
       @_ws.removeEventListener 'message', handler
       resolve d
@@ -117,18 +113,17 @@ get_message_class = ( hub ) ->
         return null
       #.....................................................................................................
       @_ws.on 'message',  ( data_ui8a ) =>
-        # debug '^#{@cfg._$from}/on_message@1^', ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
         d = @_parse_message data_ui8a
         log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
         unless d.$key is 'received'
           @send 'ack', d # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
-      debug "^#{@cfg._$from}/on_connection@1^ Intersock WebSocketServer connected on #{@cfg.url}"
+      log "^#{@cfg._$from}/on_connection@1^ Intersock WebSocketServer connected on #{@cfg.url}"
       @send 'info', "helo from #{@cfg.url}"
       return null
     #.......................................................................................................
-    debug "^#{@cfg._$from}/serve@1^ Intersock WebSocketServer listening on #{@cfg.url}"
+    log "^#{@cfg._$from}/serve@1^ Intersock WebSocketServer listening on #{@cfg.url}"
     return null
 
 
@@ -156,7 +151,6 @@ get_message_class = ( hub ) ->
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
-      # debug '^Intersock_client.on/message@1^', @constructor.name, ( typeof data_ui8a ), ( Object::toString.call data_ui8a )
       d = @_parse_message data_ui8a
       log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
       return null
