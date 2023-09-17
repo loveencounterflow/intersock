@@ -120,7 +120,7 @@ get_message_class = ( hub ) ->
         d = @_parse_message data_ui8a
         log "^#{@cfg._$from}/on_message@1^ received: #{rpr d}"
         unless d.$key is 'received'
-          ws.send 'ack', d # JSON.stringify new @Message 'received', d
+          @send 'ack', d # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
       debug '^233453^', "Intersock WebSocketServer connected on #{@cfg.url}"
@@ -151,8 +151,8 @@ get_message_class = ( hub ) ->
     debug '^start@3^', @constructor.name, typeof @_ws
     #.......................................................................................................
     @on 'open', =>
-      log "Connected to server", @cfg.url
-      @_ws_client.send 'info', "helo from client"
+      log "^#{@cfg._$from}/on_open@1^ connected to server", @cfg.url
+      @send 'info', "helo from client"
       resolve null
     #.......................................................................................................
     @on 'message', ( data_ui8a ) =>
