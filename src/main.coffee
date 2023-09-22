@@ -78,7 +78,7 @@ get_message_class = ( hub ) ->
     handler = ( data_ui8a ) =>
       d = @_parse_message data_ui8a
       @_ws.removeEventListener 'message', handler
-      tabulate "^#{@cfg._$from}.send/handler@^", 'reply to send', d
+      tabulate "^#{@cfg._$from}.send/handler@^", 'reply', d
       resolve d
     ### TAINT only valid for client-side code ###
     @on 'message', handler
