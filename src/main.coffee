@@ -128,7 +128,7 @@ get_message_class = ( hub ) ->
         # tabulate "^#{@cfg._$from}/on_message@1^", 'xxx', new @Message 'rcvd', { $ref: d.$id, $value: d, }
         tabulate "^#{@cfg._$from}/on_message@1^", 'rcvd', d
         unless d.$key is 'received'
-          @send 'ack', d # JSON.stringify new @Message 'received', d
+          @send 'ack', { $ref: d.$id, } # JSON.stringify new @Message 'received', d
         return null
       #.....................................................................................................
       tabulate "^#{@cfg._$from}/on_connection@1^", 'connect', @cfg.url
