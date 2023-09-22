@@ -125,7 +125,8 @@ get_message_class = ( hub ) ->
       #.....................................................................................................
       @_ws.on 'message',  ( data_ui8a ) =>
         d = @_parse_message data_ui8a
-        tabulate "^#{@cfg._$from}/on_message@1^", 'received', d
+        # tabulate "^#{@cfg._$from}/on_message@1^", 'xxx', new @Message 'rcvd', { $ref: d.$id, $value: d, }
+        tabulate "^#{@cfg._$from}/on_message@1^", 'rcvd', d
         unless d.$key is 'received'
           @send 'ack', d # JSON.stringify new @Message 'received', d
         return null
