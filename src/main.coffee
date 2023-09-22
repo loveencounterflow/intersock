@@ -10,6 +10,7 @@ WGUY                      = require 'webguy'
   debug }                 = console
 primitive_types           = [ 'number', 'boolean', 'string', ]
 { to_width }              = require 'to-width'
+WGUY_time                 = new WGUY.time.Time { format: 'dense', }
 
 
 #===========================================================================================================
