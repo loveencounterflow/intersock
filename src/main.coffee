@@ -27,6 +27,7 @@ defaults =
   host:         'localhost'
   port:         5500 + 1
   throw_errors: false
+  provider:     null # optional object with callable methods
   _in_browser:  WGUY.environment.browser
 
 
@@ -42,7 +43,7 @@ get_message_class = ( hub ) ->
 
     #-------------------------------------------------------------------------------------------------------
     constructor: ( $key, $value, extra ) ->
-      $id = WGUY.time.stamp()
+      $id = WGUY_time.stamp()
       $idx++
       return if @_is_primitive $value then  { $id, $idx, $from, $key, $value,     extra..., }
       else                                  { $id, $idx, $from, $key, $value...,  extra..., }
@@ -85,6 +86,9 @@ get_message_class = ( hub ) ->
     @on 'message', handler
     @_ws.send JSON.stringify d
     return null
+
+  #---------------------------------------------------------------------------------------------------------
+  call: ( $key, $value, extra ) -> new Promise ( resolve, reject ) =>
 
   #---------------------------------------------------------------------------------------------------------
   on: ( P... ) -> ( if @cfg._in_browser then @_ws.addEventListener else @_ws.on ).apply @_ws, P
