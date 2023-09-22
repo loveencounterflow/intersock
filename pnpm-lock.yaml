@@ -9,8 +9,8 @@ dependencies:
     specifier: ^1.2.0
     version: 1.2.0
   webguy:
-    specifier: ^2.3.0
-    version: 2.3.0
+    specifier: ^2.4.1
+    version: 2.4.1
   ws:
     specifier: ^8.14.1
     version: 8.14.1(bufferutil@4.0.7)
@@ -102,8 +102,8 @@ packages:
       wcsize: 1.0.0
     dev: false
 
-  /webguy@2.3.0:
-    resolution: {integrity: sha512-Sphkx5q39qxBT0G0PqF0sbuXYXrrXcN257fTHxK/jUQJzKZLO1+rJp4hgA4yAr6inDeRjD+zL/akjV60zHqqGA==}
+  /webguy@2.4.1:
+    resolution: {integrity: sha512-stDUuKPJXssDnAMt+pax3jUn+BgTDIWxz+8oSCgviiTvNe1FOnQvz9n+XiATos0g7G19+KVBCfa5ydYEWhoSxw==}
     dependencies:
       dayjs: 1.11.9
       intertype: 7.6.3
