@@ -8,6 +8,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [InterSock](#intersock)
+  - [( Logging ≻ Tracing ) ⩰ Messaging](#-logging-%E2%89%BB-tracing--%E2%A9%B0-messaging)
   - [Elementary Exchanges (EXes)](#elementary-exchanges-exes)
   - [RPC Message Format](#rpc-message-format)
   - [RPC API](#rpc-api)
@@ -21,6 +22,15 @@
 
 facilitate communication and remote procedure calls (RPC) between browser and server
 
+## ( Logging ≻ Tracing ) ⩰ Messaging
+
+* One shouldn't `log()` unstructured lines of text with interpolated data in haphazard ways, one should
+  [`trace()` structured data](https://andydote.co.uk/2023/09/19/tracing-is-better/) that can be parsed and
+  searched.
+* Let's take the 'message' in 'trace messages' seriously: 'logging' (as in 'started server', 'finished
+  processing step C') is no different from 'messaging the remote party' except for the 'other party' being
+  (a specific part of) the app itself, or else a third party specializing in listening and recording and /
+  or showing those 'messages to self'.
 
 ## Elementary Exchanges (EXes)
 
